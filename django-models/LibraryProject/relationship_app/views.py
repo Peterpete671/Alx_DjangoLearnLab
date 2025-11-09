@@ -1,17 +1,16 @@
-from django.http import HttpResponse
-from .models import Book
+from django.shortcuts import render, get_object_or_404
+from .models import Book, Library
 from django.views.generic import DetailView
-from .models import Library
 
-# Function-based view: simple text list of books
+# --- Function-based view ---
 def list_books(request):
     books = Book.objects.all()
-    output = "\n".join([f"{book.title} by {book.author.name}" for book in books])
-    return HttpResponse(output, content_type="text/plain")
+    context = {'books': books}
+    return render(request, 'relationship_app/list_books.html', context)
 
 
-# Class-based view: library detail using DetailView
+# --- Class-based view ---
 class LibraryDetailView(DetailView):
     model = Library
-    template_name = 'library_detail.html'  # template can remain for HTML output
+    template_name = 'relationship_app/library_detail.html'
     context_object_name = 'library'
