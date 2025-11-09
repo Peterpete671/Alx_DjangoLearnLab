@@ -25,6 +25,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.views import LogoutView
 from django.urls import reverse_lazy
 from .forms import RegisterForm
+from django.contrib.auth.forms import UserCreationForm
 
 def register_view(request):
 	if request.method == 'POST':
