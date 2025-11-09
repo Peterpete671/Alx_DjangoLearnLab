@@ -29,7 +29,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 def register_view(request):
 	if request.method == 'POST':
-		form = RegisterForm(request.POST)
+		form = UserCreationForm(request.POST)
 		if form.is_valid():
 			user = form.save()
 			login(request, user)
