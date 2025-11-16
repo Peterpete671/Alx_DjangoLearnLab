@@ -23,7 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-o2mu_5o-0_6u=w4p@eu%c9qwfa54xj2u)d+dv3-q#4&3bjn&mu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
+
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = 'DENY' 
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
 
 ALLOWED_HOSTS = []
 
@@ -36,7 +50,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles','bookshelf',
+    'django.contrib.staticfiles','bookshelf', 'csp',
 ]
 
 MIDDLEWARE = [
@@ -46,8 +60,26 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 'csp.middleware.CSPMiddleware',
 ]
+
+# Default CSP: only allow resources from own domain
+CSP_DEFAULT_SRC = ("'self'",)
+
+
+CSP_SCRIPT_SRC = ("'self'",)
+
+
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'") 
+
+
+CSP_IMG_SRC = ("'self'", "data:")
+
+
+CSP_FONT_SRC = ("'self'",)
+
+CSP_FRAME_SRC = ("'self'",)
+
 
 ROOT_URLCONF = 'LibraryProject.urls'
 

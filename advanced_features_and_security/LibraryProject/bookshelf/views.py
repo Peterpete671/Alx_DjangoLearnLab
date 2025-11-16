@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import permission_required
 from .models import Book
 from .forms import BookForm
+from django.utils.decorators import decorator_from_middleware
+from csp.middleware import CSPMiddleware
 
 # -----------------------------
 # List all books
