@@ -81,6 +81,24 @@ CSP_FONT_SRC = ("'self'",)
 CSP_FRAME_SRC = ("'self'",)
 
 
+
+SECURE_SSL_REDIRECT = True
+
+
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+SESSION_COOKIE_SECURE = True   # Only send session cookies over HTTPS
+CSRF_COOKIE_SECURE = True      # Only send CSRF cookies over HTTPS
+
+
+X_FRAME_OPTIONS = 'DENY'          # Prevent clickjacking
+SECURE_CONTENT_TYPE_NOSNIFF = True  # Prevent MIME type sniffing
+SECURE_BROWSER_XSS_FILTER = True    # Enable browser XSS filtering
+
+
+
 ROOT_URLCONF = 'LibraryProject.urls'
 
 TEMPLATES = [
