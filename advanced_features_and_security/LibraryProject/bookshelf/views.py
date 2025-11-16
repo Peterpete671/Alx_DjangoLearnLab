@@ -5,17 +5,12 @@ from .forms import BookForm, ExampleForm
 from django.utils.decorators import decorator_from_middleware
 from csp.middleware import CSPMiddleware
 
-# -----------------------------
-# List all books
-# -----------------------------
 @permission_required('bookshelf.can_view', raise_exception=True)
 def book_list(request):
     books = Book.objects.all()
     return render(request, 'bookshelf/book_list.html', {'books': books})
 
-# -----------------------------
-# Create a new book
-# -----------------------------
+
 @permission_required('bookshelf.can_create', raise_exception=True)
 def book_create(request):
     form = BookForm(request.POST or None)
@@ -24,9 +19,6 @@ def book_create(request):
         return redirect('book_list')
     return render(request, 'bookshelf/book_form.html', {'form': form})
 
-# -----------------------------
-# Edit an existing book
-# -----------------------------
 @permission_required('bookshelf.can_edit', raise_exception=True)
 def book_edit(request, pk):
     book = get_object_or_404(Book, pk=pk)
@@ -36,9 +28,7 @@ def book_edit(request, pk):
         return redirect('book_list')
     return render(request, 'bookshelf/book_form.html', {'form': form})
 
-# -----------------------------
-# Delete a book
-# -----------------------------
+
 @permission_required('bookshelf.can_delete', raise_exception=True)
 def book_delete(request, pk):
     book = get_object_or_404(Book, pk=pk)
@@ -46,3 +36,11 @@ def book_delete(request, pk):
         book.delete()
         return redirect('book_list')
     return render(request, 'bookshelf/book_confirm_delete.html', {'book': book})
+
+
+
+def example_form_view(request):
+    form = ExampleForm(request.POST or None)
+    if form.is_valid():
+        return redirect('book_list')
+    return render(request, 'bookshelf/form_example.html', {'form': form})
