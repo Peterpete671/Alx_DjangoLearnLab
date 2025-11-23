@@ -3,6 +3,7 @@ from .models import Book
 from .serializers import BookSerializer
 from rest_framework import generics
 from rest_framework import viewsets
+from rest_framework import permissions
 
 # Create your views here.
 class BookList(generics.ListAPIView):
@@ -12,3 +13,5 @@ class BookList(generics.ListAPIView):
 class BookViewSet(viewsets.ModelViewSet):
 	queryset = Book.objects.all()
 	serializer_class = BookSerializer
+	permission_classes = [permissions.IsAuthenticated]
+#BookViewSet: Requires users to be authenticated to access CRUD operations
