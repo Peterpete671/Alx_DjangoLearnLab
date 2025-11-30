@@ -1,9 +1,9 @@
 from django.shortcuts import render
-
-# Create your views here.
 from rest_framework import generics, permissions
 from .models import Book
 from .serializers import BookSerializer
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+
 
 # List all books (read-only)
 class BookListView(generics.ListAPIView):
@@ -29,7 +29,7 @@ class BookDetailView(generics.RetrieveAPIView):
 class BookCreateView(generics.CreateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
         def perform_create(self, serializer):
             #Example, automatically logging the user who created the book
@@ -39,10 +39,10 @@ class BookCreateView(generics.CreateAPIView):
 class BookUpdateView(generics.UpdateAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 # Delete book (authenticated users only)
 class BookDeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
