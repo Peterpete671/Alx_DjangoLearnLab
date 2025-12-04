@@ -1,0 +1,26 @@
+{% extends "blog/base.html" %} {% block title %}Your Profile{% endblock %} {%
+block content %}
+<h1>Your Profile</h1>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <fieldset>
+    <legend>Account</legend>
+    {{ u_form.as_p }}
+  </fieldset>
+
+  <fieldset>
+    <legend>Profile</legend>
+    {% if user.profile.avatar %}
+    <img
+      src="{{ user.profile.avatar.url }}"
+      alt="Avatar"
+      style="max-width: 120px"
+    />
+    {% endif %} {{ p_form.as_p }}
+  </fieldset>
+
+  <button type="submit">Save changes</button>
+</form>
+{% endblock %}
