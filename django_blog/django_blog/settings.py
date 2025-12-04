@@ -141,6 +141,14 @@ TEMPLATES = [
     },
 ]
 
+# Redirects
+LOGIN_REDIRECT_URL = 'blog:profile'
+LOGOUT_REDIRECT_URL = 'blog:login'
+LOGIN_URL = 'blog:login'
+
+# Media files for avatars
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 
 # Default primary key field type
