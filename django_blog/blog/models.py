@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.urls import reverse
 from django.utils import timezone
+from taggit.managers import TaggableManager
 
 class Profile(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -13,15 +14,15 @@ class Profile(models.Model):
 	def __str__(self):
 		return f"Profile of {self.user.username}"
 
-
 class Post(models.Model):
 	title = models.CharField(max_length=200)
 	content = models.TextField()
-	published_date = models.DateTimeField(auto_now_add=True)
-	author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
+	author = models.ForeignKey(User, on_delete=models.CASCADE)
+	created_at = models.DateTimeField(auto_now_add=True)
+	updated_at = models.DateTimeField(auto_now=True)
 
-	class Meta:
-		ordering = ['-published_date']
+	# Add tagging
+	tags = TaggableManager()
 
 	def __str__(self):
 		return self.title
@@ -48,9 +49,4 @@ def create_or_update_user_profile(sender, instance, created, **kwargs):
 	if created:
 		Profile.objects.create(user=instance)
 	else:
-		# Ensure a profile exists and save it
-		Profile.objects.get_or_create(user=instance)
-		try:
-			instance.profile.save()
-		except Exception:
-			pass
+		instance.profile.save()

@@ -34,3 +34,7 @@
     </footer>
   </body>
 </html>
+<form method="get" action="{% url 'blog:search_results' %}">
+  <input type="text" name="query" placeholder="Search posts..." />
+  <button type="submit">Search</button>
+</form>
