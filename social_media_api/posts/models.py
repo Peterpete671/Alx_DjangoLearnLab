@@ -15,7 +15,7 @@ class Post(models.Model):
         help_text="The user who created this post"
     )
     title = models.CharField(max_length=255, help_text="Post title")
-    content = models.TextField(help_text="Post content")
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -52,7 +52,7 @@ class Comment(models.Model):
         related_name='comments',
         help_text="The user who created this comment"
     )
-    content = models.TextField(help_text="Comment content")
+    content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
