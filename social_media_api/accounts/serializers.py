@@ -35,3 +35,14 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ['id', 'username', 'email', 'bio', 'profile_picture', 'followers']
+
+class SimpleUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'first_name', 'last_name', 'email')
+        read_only_fields = fields
+
+
+class FollowActionSerializer(serializers.Serializer):
+    # minimal serializer for POST actions (not strictly required but helpful)
+    user_id = serializers.IntegerField()

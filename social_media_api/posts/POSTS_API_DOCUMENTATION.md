@@ -762,3 +762,14 @@ Create an environment with:
 - [ ] Delete own comment
 - [ ] Get all comments for a specific post
 - [ ] Filter comments by author
+
+### Follow / Unfollow
+
+- **POST** `/api/accounts/follow/<user_id>/` — follow user with `id=user_id`. Auth required.
+- **POST** `/api/accounts/unfollow/<user_id>/` — unfollow user with `id=user_id`. Auth required.
+- **GET** `/api/accounts/following/?user_id=<id>` — list users followed by the requested user (defaults to current user).
+- **GET** `/api/accounts/followers/?user_id=<id>` — list followers of the requested user (defaults to current user).
+
+### Feed
+
+- **GET** `/api/posts/feed/` — returns posts created by users the current user follows, ordered by `created_at` descending.

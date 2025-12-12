@@ -4,8 +4,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import generics 
+from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 
-from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer, SimpleUserSerializer
 
 User = get_user_model()
 
@@ -44,3 +47,59 @@ def login_user(request):
 def get_user_profile(request):
     serializer = UserSerializer(request.user)
     return Response(serializer.data)
+
+class FollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        target = get_object_or_404(User, pk=user_id)
+        actor = request.user
+        if target == actor:
+            return Response({'detail': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+        if actor.is_following(target):
+            return Response({'detail': 'Already following.'}, status=status.HTTP_400_BAD_REQUEST)
+        actor.following.add(target)
+        return Response({'detail': 'Followed successfully.'}, status=status.HTTP_200_OK)
+
+
+class UnfollowUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id):
+        target = get_object_or_404(User, pk=user_id)
+        actor = request.user
+        if target == actor:
+            return Response({'detail': 'You cannot unfollow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not actor.is_following(target):
+            return Response({'detail': 'Not following.'}, status=status.HTTP_400_BAD_REQUEST)
+        actor.following.remove(target)
+        return Response({'detail': 'Unfollowed successfully.'}, status=status.HTTP_200_OK)
+
+
+
+
+class FollowingListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SimpleUserSerializer
+
+    def get_queryset(self):
+        # ?user_id= optional to view another user's following list; default current user
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            user = get_object_or_404(User, pk=user_id)
+        else:
+            user = self.request.user
+        return user.following.all()
+
+
+class FollowersListView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = SimpleUserSerializer
+
+    def get_queryset(self):
+        user_id = self.request.query_params.get('user_id')
+        if user_id:
+            user = get_object_or_404(User, pk=user_id)
+        else:
+            user = self.request.user
+        return user.followers.all()
