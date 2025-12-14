@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from .models import Post, Comment
 from accounts.serializers import SimpleUserSerializer
+from .models import Like
 
 User = get_user_model()
 
@@ -77,3 +78,10 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = ('id', 'author', 'content', 'created_at')
+
+class LikeSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+
+    class Meta:
+        model = Like
+        fields = ('id', 'user', 'post', 'created_at')
