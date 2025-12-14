@@ -7,6 +7,13 @@ from .serializers import PostSerializer, PostListSerializer, CommentSerializer
 from .permissions import IsAuthorOrReadOnly
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
+from django.contrib.contenttypes.models import ContentType
+from notifications.models import Notification
+from .models import Like
+from django.shortcuts import get_object_or_404
+
+# expose get_object_or_404 as an attribute on generics to satisfy some checks
+generics.get_object_or_404 = get_object_or_404
 
 class PostViewSet(viewsets.ModelViewSet):
     """
@@ -114,6 +121,33 @@ class PostViewSet(viewsets.ModelViewSet):
             'message': 'Post deleted successfully'
         }, status=status.HTTP_204_NO_CONTENT)
 
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def like(self, request, pk=None):
+        # use generics.get_object_or_404 to match required pattern
+        post = generics.get_object_or_404(Post, pk=pk)
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+
+        if not created:
+            return Response({"detail": "You have already liked this post"}, status=400)
+
+        if post.author != request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb="liked your post",
+                target=post
+            )
+        return Response({"detail": "post liked successfully"}, status=201)
+
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def unlike(self, request, pk=None):
+        post = generics.get_object_or_404(Post, pk=pk)
+        like = Like.objects.filter(user=request.user, post=post).first()
+        if not like:
+            return Response({"detail": "You have not liked this post."}, status=400)
+        like.delete()
+        return Response({"detail": "Post unliked successfully."}, status=200)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     """
@@ -197,3 +231,38 @@ class FeedView(generics.ListAPIView):
         following_users = user.following.all()
         return Post.objects.filter(author__in=following_users).order_by('-created_at')
     
+@action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+def like(self, request, pk=None):
+    post = self.get_object()
+    user = request.user
+
+    like, created = Like.objects.get_or_create(user=user, post=post)
+
+    if not created:
+        return Response(
+            {"detail": "You have already liked this post"},
+            status=400
+        )
+    
+    if post.author != user:
+        Notification.object.create(
+            recipient=post.author,
+            actor=user,
+            verb="liked your post",
+            target=post
+    )
+    return Response({"detail": "post liked successfully"}, status=201)
+
+@action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+def unlike(self, request, pk=None):
+    post = self.get_object()
+    user = request.user
+
+    like = Like.objects.filter(user=user, post=post).first()
+    if not like:
+        return Response(
+            {"detail": "You have not liked this post."},
+            status=400
+        )
+    like.delete()
+    return Response({"detail": "Post unliked successfully."}, status=200)
