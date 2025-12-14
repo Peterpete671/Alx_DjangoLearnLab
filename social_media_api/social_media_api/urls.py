@@ -24,7 +24,6 @@ urlpatterns = [
     path('api/accounts', include('accounts.urls')),
     path('api/', include('posts.urls'))
     path('api/notifications/', include('notifications.urls')),
-
 ]
 #Serve media files in development
 if settings.DEBUG:
