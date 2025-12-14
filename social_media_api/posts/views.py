@@ -1,11 +1,12 @@
-from rest_framework import viewsets, permissions, filters, status
+from rest_framework import viewsets, permissions, filters, status, generics
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Post, Comment
 from .serializers import PostSerializer, PostListSerializer, CommentSerializer
 from .permissions import IsAuthorOrReadOnly
-
+from django.db.models import Q
+from rest_framework.permissions import IsAuthenticated
 
 class PostViewSet(viewsets.ModelViewSet):
     """
@@ -183,3 +184,16 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response({
             'message': 'Comment deleted successfully'
         }, status=status.HTTP_204_NO_CONTENT)
+    
+
+class FeedView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = PostSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        user = self.request.user
+        #posts by users that the user follows
+        following_qs = user.following.all()
+        return Post.objects.filter(author__in=following_qs).order_by('-created_at')
+    
